@@ -63,7 +63,7 @@ public:
 
 private:
 	std::vector<GUIButton> buttons;
-	GUIButton newCharacter;
+	//GUIButton newCharacter;
 };
 
 //---------------------------------------------------GAMEPLAY SCENE----------------------------------------------------

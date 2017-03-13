@@ -112,6 +112,14 @@ void MenuScene::SetUI()
 
 //--------------------------------------------CHARACTER SELECTION SCENE------------------------------------------------------------------
 
+CharacterSelectionScene::CharacterSelectionScene()
+{
+}
+
+CharacterSelectionScene::~CharacterSelectionScene()
+{
+}
+
 //---------------------------------------------GAMEPLAY SCENE----------------------------------------------------------------------------
 
 GameplayScene::GameplayScene(int seed, int currentCircle, sf::Texture* texture) :
@@ -236,12 +244,4 @@ void GameplayScene::NextCircle()
 	goingIn = false;
 	scaleConst = 0;
 	fadeOut.setSize(sf::Vector2f(0, 0));
-}
-
-CharacterSelectionScene::CharacterSelectionScene()
-{
-}
-
-CharacterSelectionScene::~CharacterSelectionScene()
-{
 }
