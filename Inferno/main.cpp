@@ -18,26 +18,14 @@ int main()
 
 	srand(time(NULL));
 	MenuScene menuScene;
+	CharacterSelectionScene csScene;
 	GameplayScene gameplayScene(rand(), 0, &playerTexture);
-	std::vector<Scene*> scenes = { &menuScene, &gameplayScene };
+	std::vector<Scene*> scenes = { &menuScene, &csScene, &gameplayScene };
 	SceneManager manager(scenes);
 
 	while (window.isOpen())
 	{
 		deltaTime = clock.restart().asSeconds();
-
-		sf::Event evnt;
-		while (window.pollEvent(evnt))
-		{
-			switch (evnt.type)
-			{
-			case sf::Event::Closed:
-				window.close();
-				break;
-			case sf::Event::Resized:
-				break;
-			}
-		}
 		
 		manager.Update(deltaTime);
 		manager.Draw(window);

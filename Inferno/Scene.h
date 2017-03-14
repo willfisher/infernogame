@@ -3,17 +3,19 @@
 #include "CircleTerrain.h"
 #include "Player.h"
 #include <string>
+#include <functional>
 #include "Dialogue.h"
 #include "CloudSystem.h"
 #include "GUIButton.h"
+#include "CharacterManager.h"
 
 using namespace std;
 
 class Scene
 {
 public:
-	static const unsigned VIEW_HEIGHT = 3 * 32 * 2;
-	static const unsigned VIEW_WIDTH = 5 * 32 * 2;
+	static const unsigned VIEW_HEIGHT = 3 * 32 * 2; //192
+	static const unsigned VIEW_WIDTH = 5 * 32 * 2; //320
 
 	Scene();
 	~Scene();
@@ -61,9 +63,22 @@ public:
 	CharacterSelectionScene();
 	~CharacterSelectionScene();
 
+	void Update(float deltaTime);
+	void Draw(sf::RenderWindow& window);
+
+	static CharacterManager characterManager;
+	static void SetCharacter(int i);
+	static void DeleteCharacter();
+	static void NewCharacter();
+
 private:
+	sf::Text characterText;
+	sf::Text characterDetails;
+
+	void CreateButtons();
 	std::vector<GUIButton> buttons;
-	//GUIButton newCharacter;
+	GUIButton newCharacter;
+	GUIButton deleteCharacter;
 };
 
 //---------------------------------------------------GAMEPLAY SCENE----------------------------------------------------

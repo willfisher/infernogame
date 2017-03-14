@@ -4,8 +4,6 @@
 #include "Dialogue.h"
 
 
-
-
 sf::Font Scene::MAIN_FONT;
 sf::Texture GameplayScene::backgroundTexture;
 
@@ -91,6 +89,9 @@ void MenuScene::Draw(sf::RenderWindow & window)
 			ResizeView(window, defaultView);
 			SetUI();
 			break;
+		case sf::Event::Closed:
+			window.close();
+			break;
 		}
 	}
 
@@ -112,13 +113,100 @@ void MenuScene::SetUI()
 
 //--------------------------------------------CHARACTER SELECTION SCENE------------------------------------------------------------------
 
-CharacterSelectionScene::CharacterSelectionScene()
+CharacterManager CharacterSelectionScene::characterManager;
+static sf::Color menuButtonColor[] = { sf::Color(100, 10, 10), sf::Color(75, 10, 10), sf::Color(50, 10, 10) };
+
+
+CharacterSelectionScene::CharacterSelectionScene() :
+	characterText("", Scene::MAIN_FONT, 60),
+	characterDetails("", Scene::MAIN_FONT, 60)
 {
+	sf::Text buttonText = sf::Text("New Character", Scene::MAIN_FONT, 60);
+	buttonText.setScale(sf::Vector2f(0.05, 0.05));
+	newCharacter = GUIButton(&NewCharacter, sf::Vector2f(320 - 50 - 5, 192 - 20 - 5), sf::Vector2f(50, 20), menuButtonColor, buttonText);
+	buttonText.setString("Delete Character");
+	deleteCharacter = GUIButton(&DeleteCharacter, sf::Vector2f(5, 192 - 20 - 5), sf::Vector2f(50, 20), menuButtonColor, buttonText);
+	
+	characterText.setFillColor(sf::Color::Black);
+	characterText.setScale(sf::Vector2f(0.1, 0.1));
+	characterDetails.setFillColor(sf::Color::Black);
+	characterDetails.setScale(sf::Vector2f(0.1, 0.1));
+
+	CreateButtons();
 }
 
 CharacterSelectionScene::~CharacterSelectionScene()
 {
 }
+
+void CharacterSelectionScene::Update(float deltaTime)
+{
+	newCharacter.Update(deltaTime);
+	for (GUIButton& button : buttons)
+		button.Update(deltaTime);
+	deleteCharacter.Update(deltaTime);
+}
+
+void CharacterSelectionScene::Draw(sf::RenderWindow & window)
+{
+	if (buttons.size() != characterManager.characterCount())
+		CreateButtons();
+
+	window.clear(sf::Color::White);
+	characterText.setString("Character " + std::to_string(characterManager.currentCharacter + 1));
+	characterDetails.setString("Circle: " + std::to_string(characterManager.getCharacter().circleNumber));
+	sf::FloatRect textBox = sf::Text(characterText).getGlobalBounds();
+	characterText.setPosition(sf::Vector2f((320 - 50 -5) / 2.0f - textBox.width / 2.0f, 5));
+	textBox = sf::Text(characterDetails).getGlobalBounds();
+	characterDetails.setPosition(sf::Vector2f((320 - 50 - 5) / 2.0f - textBox.width / 2.0f, 10 + textBox.height));
+	sf::Event evnt;
+	while (window.pollEvent(evnt))
+	{
+		newCharacter.RegisterEvent(evnt);
+		for (GUIButton& button : buttons)
+			button.RegisterEvent(evnt);
+		deleteCharacter.RegisterEvent(evnt);
+		if(evnt.type == sf::Event::Closed)
+			window.close();
+	}
+
+	newCharacter.Draw(window);
+	for (GUIButton& button : buttons)
+		button.Draw(window);
+	deleteCharacter.Draw(window);
+	window.draw(characterText);
+	window.draw(characterDetails);
+}
+
+void CharacterSelectionScene::NewCharacter()
+{
+	if(characterManager.characterCount() < 4)
+		characterManager.AddCharacter(0, rand(), sf::Vector2u(5, 6));
+}
+
+void CharacterSelectionScene::CreateButtons()
+{
+	sf::Text buttonText = sf::Text("", Scene::MAIN_FONT, 60);
+	buttonText.setScale(sf::Vector2f(0.05, 0.05));
+	buttons.clear();
+	for (int i = 0; i < characterManager.characterCount(); i++)
+	{
+		buttonText.setString("Character " + std::to_string(i + 1));
+		buttons.push_back(GUIButton(std::bind(SetCharacter, i), sf::Vector2f(320 - 50 - 5, 5 * (i + 1) + 20 * i), sf::Vector2f(50, 20), menuButtonColor, buttonText));
+	}
+}
+
+void CharacterSelectionScene::SetCharacter(int i)
+{
+	characterManager.currentCharacter = i;
+}
+
+void CharacterSelectionScene::DeleteCharacter()
+{
+	if(characterManager.characterCount() > 1)
+		characterManager.DeleteCurrentCharacter();
+}
+
 
 //---------------------------------------------GAMEPLAY SCENE----------------------------------------------------------------------------
 
@@ -203,6 +291,9 @@ void GameplayScene::Draw(sf::RenderWindow & window)
 		case sf::Event::Resized:
 			ResizeView(window, view);
 			background.setSize(view.getSize());
+			break;
+		case sf::Event::Closed:
+			window.close();
 			break;
 		}
 	}

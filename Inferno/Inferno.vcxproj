@@ -216,6 +216,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Animation.cpp" />
+    <ClCompile Include="CharacterManager.cpp" />
     <ClCompile Include="CircleTerrain.cpp" />
     <ClCompile Include="Cloud.cpp" />
     <ClCompile Include="CloudSystem.cpp" />
@@ -232,6 +233,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animation.h" />
+    <ClInclude Include="CharacterManager.h" />
     <ClInclude Include="CircleTerrain.h" />
     <ClInclude Include="Cloud.h" />
     <ClInclude Include="CloudSystem.h" />
@@ -244,6 +246,7 @@
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="Tile.h" />
     <ClInclude Include="Item.h" />
+    <ClInclude Include="UIElement.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
