@@ -85,10 +85,6 @@ void MenuScene::Draw(sf::RenderWindow & window)
 	{
 		switch (evnt.type)
 		{
-		case sf::Event::Resized:
-			ResizeView(window, defaultView);
-			SetUI();
-			break;
 		case sf::Event::Closed:
 			window.close();
 			break;
@@ -104,6 +100,10 @@ void MenuScene::Draw(sf::RenderWindow & window)
 	window.draw(pressSpace);
 }
 
+void MenuScene::Reset()
+{
+}
+
 void MenuScene::SetUI()
 {
 	defaultView.setCenter(defaultView.getSize() / 2.0f);
@@ -115,6 +115,7 @@ void MenuScene::SetUI()
 
 CharacterManager CharacterSelectionScene::characterManager;
 static sf::Color menuButtonColor[] = { sf::Color(100, 10, 10), sf::Color(75, 10, 10), sf::Color(50, 10, 10) };
+static sf::Color playButtonColor[] = { sf::Color(50, 205, 50), sf::Color(34, 139, 34), sf::Color(0, 100, 0) };
 
 
 CharacterSelectionScene::CharacterSelectionScene() :
@@ -126,6 +127,8 @@ CharacterSelectionScene::CharacterSelectionScene() :
 	newCharacter = GUIButton(&NewCharacter, sf::Vector2f(320 - 50 - 5, 192 - 20 - 5), sf::Vector2f(50, 20), menuButtonColor, buttonText);
 	buttonText.setString("Delete Character");
 	deleteCharacter = GUIButton(&DeleteCharacter, sf::Vector2f(5, 192 - 20 - 5), sf::Vector2f(50, 20), menuButtonColor, buttonText);
+	buttonText.setString("Play");
+	playGame = GUIButton(&PlayGame, sf::Vector2f(320 / 2 - 50 / 2, 192 - 20 - 5), sf::Vector2f(50, 20), playButtonColor, buttonText);
 	
 	characterText.setFillColor(sf::Color::Black);
 	characterText.setScale(sf::Vector2f(0.1, 0.1));
@@ -145,6 +148,7 @@ void CharacterSelectionScene::Update(float deltaTime)
 	for (GUIButton& button : buttons)
 		button.Update(deltaTime);
 	deleteCharacter.Update(deltaTime);
+	playGame.Update(deltaTime);
 }
 
 void CharacterSelectionScene::Draw(sf::RenderWindow & window)
@@ -166,6 +170,7 @@ void CharacterSelectionScene::Draw(sf::RenderWindow & window)
 		for (GUIButton& button : buttons)
 			button.RegisterEvent(evnt);
 		deleteCharacter.RegisterEvent(evnt);
+		playGame.RegisterEvent(evnt);
 		if(evnt.type == sf::Event::Closed)
 			window.close();
 	}
@@ -174,8 +179,13 @@ void CharacterSelectionScene::Draw(sf::RenderWindow & window)
 	for (GUIButton& button : buttons)
 		button.Draw(window);
 	deleteCharacter.Draw(window);
+	playGame.Draw(window);
 	window.draw(characterText);
 	window.draw(characterDetails);
+}
+
+void CharacterSelectionScene::Reset()
+{
 }
 
 void CharacterSelectionScene::NewCharacter()
@@ -196,6 +206,11 @@ void CharacterSelectionScene::CreateButtons()
 	}
 }
 
+void CharacterSelectionScene::PlayGame()
+{
+	SceneManager::setActiveScene(2);
+}
+
 void CharacterSelectionScene::SetCharacter(int i)
 {
 	characterManager.currentCharacter = i;
@@ -210,21 +225,15 @@ void CharacterSelectionScene::DeleteCharacter()
 
 //---------------------------------------------GAMEPLAY SCENE----------------------------------------------------------------------------
 
-GameplayScene::GameplayScene(int seed, int currentCircle, sf::Texture* texture) :
-	terrain(abs(seed - currentCircle), 0, sf::Vector2u(25, 25), this),
+GameplayScene::GameplayScene(sf::Texture* texture) :
 	view(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(VIEW_WIDTH, VIEW_HEIGHT)),
 	player(texture, sf::Vector2u(5, 6), 0.25f, 100.0f * GAME_SCALE),
 	introDialogue(std::vector<std::string>(introdialogue, end(introdialogue)), &view, "Resources/UI/DevilPortrait.png", sf::RectangleShape(sf::Vector2f(50, 50)))
 {
-	this->seed = seed;
-	this->currentCircle = currentCircle;
-
 	oldWindowSize.x = VIEW_WIDTH;
 	oldWindowSize.y = VIEW_HEIGHT;
 
 	Item::setPlayer(&player);
-
-	player.setPosition(sf::Vector2f(2, 2) - player.getSize());
 
 	MAIN_FONT.loadFromFile("Resources/UI/Fonts/forward.ttf");
 
@@ -293,6 +302,7 @@ void GameplayScene::Draw(sf::RenderWindow & window)
 			background.setSize(view.getSize());
 			break;
 		case sf::Event::Closed:
+			SaveState();
 			window.close();
 			break;
 		}
@@ -335,4 +345,17 @@ void GameplayScene::NextCircle()
 	goingIn = false;
 	scaleConst = 0;
 	fadeOut.setSize(sf::Vector2f(0, 0));
+}
+
+void GameplayScene::SaveState()
+{
+	CharacterSelectionScene::characterManager.ModifyCurrentCharacter(Character(currentCircle, seed, sf::Vector2u(player.getPosition())));
+}
+
+void GameplayScene::Reset()
+{
+	this->seed = CharacterSelectionScene::characterManager.getCharacter().circleSeed;
+	this->currentCircle = CharacterSelectionScene::characterManager.getCharacter().circleNumber;
+	terrain = CircleTerrain(abs(seed - currentCircle), currentCircle, sf::Vector2u(25, 25), this);
+	player.setPosition(sf::Vector2f(CharacterSelectionScene::characterManager.getCharacter().location));
 }

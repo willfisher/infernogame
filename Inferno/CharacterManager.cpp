@@ -19,6 +19,28 @@ void CharacterManager::DeleteCurrentCharacter()
 	characters.erase(characters.begin() + currentCharacter);
 	if(currentCharacter != 0)
 		currentCharacter--;
+	WriteSave();
+}
+
+void CharacterManager::AddCharacter(int circleNumber, int circleSeed, sf::Vector2u & location)
+{
+	AddCharacter(Character(circleNumber, circleSeed, location));
+}
+
+void CharacterManager::AddCharacter(Character & character)
+{
+	characters.push_back(character);
+	WriteSave();
+}
+
+void CharacterManager::ModifyCurrentCharacter(Character & newCharacter)
+{
+	characters.at(currentCharacter) = newCharacter;
+	WriteSave();
+}
+
+void CharacterManager::WriteSave()
+{
 	std::ofstream characterFile;
 	characterFile.open("Saves/characters.txt", std::ofstream::out | std::ofstream::trunc);
 	characterFile.close();
@@ -32,22 +54,6 @@ void CharacterManager::DeleteCurrentCharacter()
 				characterFile << "\n";
 			characterFile << characters.at(i).toString();
 		}
-		characterFile.close();
-	}
-}
-
-void CharacterManager::AddCharacter(int circleNumber, int circleSeed, sf::Vector2u & location)
-{
-	AddCharacter(Character(circleNumber, circleSeed, location));
-}
-
-void CharacterManager::AddCharacter(Character & character)
-{
-	characters.push_back(character);
-	std::ofstream characterFile("Saves/characters.txt", std::ios_base::app | std::ios_base::out);
-	if (characterFile.is_open())
-	{
-		characterFile << "\n" << character.toString();
 		characterFile.close();
 	}
 }

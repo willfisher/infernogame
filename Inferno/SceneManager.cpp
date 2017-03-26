@@ -2,6 +2,7 @@
 
 
 int SceneManager::ACTIVE_SCENE = 0;
+std::vector<Scene*> SceneManager::scenes;
 
 SceneManager::SceneManager(std::vector<Scene*> scenes)
 {

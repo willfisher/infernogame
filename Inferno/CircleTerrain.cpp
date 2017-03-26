@@ -5,6 +5,11 @@ static const sf::IntRect edgeRect(sf::Vector2i(16, 0), sf::Vector2i(16, 16));
 
 sf::Texture CircleTerrain::parallaxTexture;
 
+CircleTerrain::CircleTerrain() :
+	itemManager(0)
+{
+}
+
 CircleTerrain::CircleTerrain(int seed, int circleNum, sf::Vector2u dimensions, GameplayScene* scene) :
 	itemManager(seed)
 {

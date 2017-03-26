@@ -22,6 +22,7 @@ public:
 
 	virtual void Update(float deltaTime) = 0;
 	virtual void Draw(sf::RenderWindow& window) = 0;
+	virtual void Reset() = 0;
 
 	static sf::Font MAIN_FONT;
 
@@ -40,6 +41,7 @@ public:
 
 	void Update(float deltaTime);
 	void Draw(sf::RenderWindow& window);
+	void Reset();
 
 private:
 	sf::RectangleShape title;
@@ -65,8 +67,10 @@ public:
 
 	void Update(float deltaTime);
 	void Draw(sf::RenderWindow& window);
+	void Reset();
 
 	static CharacterManager characterManager;
+	static void PlayGame();
 	static void SetCharacter(int i);
 	static void DeleteCharacter();
 	static void NewCharacter();
@@ -79,6 +83,7 @@ private:
 	std::vector<GUIButton> buttons;
 	GUIButton newCharacter;
 	GUIButton deleteCharacter;
+	GUIButton playGame;
 };
 
 //---------------------------------------------------GAMEPLAY SCENE----------------------------------------------------
@@ -86,11 +91,12 @@ private:
 class GameplayScene : public Scene
 {
 public:
-	GameplayScene(int seed, int currentCircle, sf::Texture* texture);
+	GameplayScene(sf::Texture* texture);
 	~GameplayScene();
 
 	void Update(float deltaTime);
 	void Draw(sf::RenderWindow& window);
+	void Reset();
 
 	void NextCircle();
 
@@ -116,4 +122,6 @@ private:
 	bool fading = false;
 	bool goingIn = false;
 	float scaleConst = 0;
+
+	void SaveState();
 };

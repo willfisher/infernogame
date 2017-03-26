@@ -8,6 +8,7 @@
 class CircleTerrain
 {
 public:
+	CircleTerrain();
 	CircleTerrain(int seed, int circleNum, sf::Vector2u dimensions, GameplayScene* scene);
 	~CircleTerrain();
 
@@ -19,6 +20,9 @@ public:
 	sf::Vector2f getCoord(sf::Vector2u coordinates);
 
 	void BoundToMap(sf::RectangleShape oldState, Collider& currentState);
+
+	int getSeed() { return seed; }
+	int getCircleNumber() { return circleNum; }
 
 private:
 	int seed;

@@ -19,7 +19,7 @@ int main()
 	srand(time(NULL));
 	MenuScene menuScene;
 	CharacterSelectionScene csScene;
-	GameplayScene gameplayScene(rand(), 0, &playerTexture);
+	GameplayScene gameplayScene(&playerTexture);
 	std::vector<Scene*> scenes = { &menuScene, &csScene, &gameplayScene };
 	SceneManager manager(scenes);
 

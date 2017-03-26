@@ -31,8 +31,12 @@ public:
 	void AddCharacter(int circleNumber, int circleSeed, sf::Vector2u& location);
 	void AddCharacter(Character& character);
 
+	void ModifyCurrentCharacter(Character& newCharacter);
+
 private:
 	std::vector<Character> characters;
+
+	void WriteSave();
 };
 
 
